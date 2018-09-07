@@ -1,3 +1,10 @@
+0.003   2018-09-07 (PERLANCAR)
+
+	- No functional changes.
+
+	- [doc] Mention Finance::SE::IDX::Static.
+
+
 0.002   2018-09-07 (PERLANCAR)
 
 	- [bugfix] There's a hard limit on number of rows returned by
