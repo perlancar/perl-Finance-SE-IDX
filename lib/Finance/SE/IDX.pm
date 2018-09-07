@@ -107,3 +107,7 @@ sub list_idx_firms {
 
 1;
 # ABSTRACT:
+
+=head1 SEE ALSO
+
+L<Finance::SE::IDX::Static> for the static (offline) version
