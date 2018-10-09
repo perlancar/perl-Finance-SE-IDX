@@ -7,7 +7,7 @@ use 5.010001;
 use strict;
 use warnings;
 
-use HTTP::Tiny;
+use HTTP::Tiny::Cache;
 
 use Exporter qw(import);
 our @EXPORT_OK = qw(
@@ -28,7 +28,7 @@ my $urlprefix = "http://www.idx.co.id/umbraco/Surface/";
 sub _get_json {
     my $url = shift;
 
-    my $res = HTTP::Tiny->new->get($url);
+    my $res = HTTP::Tiny::Cache->new->get($url);
     return [$res->{status}, $res->{reason}] unless $res->{status} == 200;
     require JSON::MaybeXS;
     [200, "OK", JSON::MaybeXS::decode_json($res->{content})];
@@ -37,20 +37,34 @@ sub _get_json {
 $SPEC{list_idx_sectors} = {
     v => 1.1,
     summary => 'List sectors',
+    description => <<'_',
+
+By default caches results for 8 hours (by locally setting CACHE_MAX_AGE). Can be
+overriden by using HTTP_TINY_CACHE_MAX_AGE.
+
+_
     args => {
     },
 };
 sub list_idx_sectors {
+    local $ENV{CACHE_MAX_AGE} = 8*3600;
     _get_json("${urlprefix}Helper/GetSectors");
 }
 
 $SPEC{list_idx_boards} = {
     v => 1.1,
     summary => 'List boards',
+    description => <<'_',
+
+By default caches results for 8 hours (by locally setting CACHE_MAX_AGE). Can be
+overriden by using HTTP_TINY_CACHE_MAX_AGE.
+
+_
     args => {
     },
 };
 sub list_idx_boards {
+    local $ENV{CACHE_MAX_AGE} = 8*3600;
     my $res = _get_json("${urlprefix}Helper/GetBoards");
     return $res unless $res->[0] == 200;
     $res->[2] = [grep {$_ ne ''} @{ $res->[2] }];
@@ -60,6 +74,12 @@ sub list_idx_boards {
 $SPEC{list_idx_firms} = {
     v => 1.1,
     summary => 'List firms',
+    description => <<'_',
+
+By default caches results for 8 hours (by locally setting CACHE_MAX_AGE). Can be
+overriden by using HTTP_TINY_CACHE_MAX_AGE.
+
+_
     args => {
         board => {
             schema => ['str*', match=>qr/\A\w+\z/],
@@ -72,6 +92,7 @@ $SPEC{list_idx_firms} = {
     },
 };
 sub list_idx_firms {
+    local $ENV{CACHE_MAX_AGE} = 8*3600;
     my %args = @_;
 
     my $sector = $args{sector} // '';
