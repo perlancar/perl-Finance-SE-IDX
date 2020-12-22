@@ -126,6 +126,50 @@ sub list_idx_firms {
     [200, "OK", \@rows, {'table.fields'=>[qw/code name listing_date shares board/]}];
 }
 
+$SPEC{list_idx_brokers} = {
+    v => 1.1,
+    summary => 'List brokers',
+    description => <<'_',
+
+By default caches results for 8 hours (by locally setting CACHE_MAX_AGE). Can be
+overriden by using HTTP_TINY_CACHE_MAX_AGE.
+
+_
+    args => {
+    },
+};
+sub list_idx_brokers {
+    local $ENV{CACHE_MAX_AGE} = 8*3600;
+    my %args = @_;
+
+    my @rows;
+
+    # like in firms, there's probably a hard limit of 150, let's be nice and ask
+    # 100 at a time
+    my $start = 0;
+    while (1) {
+        my $res = _get_json("${urlprefix}ExchangeMember/GetBroker?start=$start&length=100");
+        return $res unless $res->[0] == 200;
+        for my $row0 (@{ $res->[2]{data} }) {
+            my $row = {
+                code        => $row0->{Code},
+                name        => $row0->{Name},
+                license     => $row0->{License},
+                status_name => $row0->{StatusName},
+                city        => $row0->{City},
+            };
+            push @rows, $row;
+        }
+        if (@{ $res->[2]{data} } == 100) {
+            $start += 100;
+            next;
+        } else {
+            last;
+        }
+    }
+    [200, "OK", \@rows, {'table.fields'=>[qw/code name license status_name city/]}];
+}
+
 1;
 # ABSTRACT:
 
