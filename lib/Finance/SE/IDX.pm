@@ -1,6 +1,8 @@
 package Finance::SE::IDX;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -11,9 +13,10 @@ use HTTP::Tiny::Cache;
 
 use Exporter qw(import);
 our @EXPORT_OK = qw(
-                       list_idx_sectors
                        list_idx_boards
+                       list_idx_brokers
                        list_idx_firms
+                       list_idx_sectors
                );
 
 our %SPEC;

@@ -1,3 +1,8 @@
+0.005   2020-12-22  Released-By: PERLANCAR; Urgency: medium
+
+	- Add function: list_idx_brokers().
+
+
 0.004   2018-10-09  Released-By: PERLANCAR
 
 	- Implement caching.
