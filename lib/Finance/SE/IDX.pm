@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use Log::ger;
 
+use HTTP::Tiny::Plugin 'Cache', 'NewestFirefox';
+
 use Exporter qw(import);
 our @EXPORT_OK = qw(
                        list_idx_boards
@@ -28,11 +30,9 @@ $SPEC{':package'} = {
 my $urlprefix = "https://www.idx.co.id/umbraco/Surface/";
 
 sub _get_json {
-    require HTTP::Tiny::Cache;
-
     my $url = shift;
 
-    my $res = HTTP::Tiny::Cache->new->get($url);
+    my $res = HTTP::Tiny::Plugin->new->get($url);
     return [$res->{status}, $res->{reason}] unless $res->{status} == 200;
     require JSON::MaybeXS;
     [200, "OK", JSON::MaybeXS::decode_json($res->{content})];
